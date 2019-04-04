@@ -1,5 +1,6 @@
 package com.example.demo.FileTransfer;
 
+import com.example.demo.FileInfo.FileInfo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -8,14 +9,17 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 
 @Service
 public class XLSXReader {
 
 
-    public void readXLSX(String path) {
+    public List<FileInfo> readXLSX(String path) {
+        List<FileInfo> result = new ArrayList<>();
         try {
             File excel = new File(path);
             FileInputStream fis = new FileInputStream(excel);
@@ -29,7 +33,10 @@ public class XLSXReader {
                 while(cellIterator.hasNext()) {
                     Cell cell = cellIterator.next();
                     try {
-                        System.out.print(cell.getStringCellValue() + " -----");
+                        FileInfo fileInfo = new FileInfo();
+                        fileInfo.setTrajectory(cell.getStringCellValue());
+                        fileInfo.setFileName(cellIterator.next().getStringCellValue());
+                        result.add(fileInfo);
                     }catch (Exception b) {
 
                     }
@@ -39,5 +46,7 @@ public class XLSXReader {
         }catch (Exception e){
             e.printStackTrace();
         }
+
+        return result;
     }
 }

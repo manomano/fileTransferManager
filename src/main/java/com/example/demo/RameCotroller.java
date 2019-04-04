@@ -1,13 +1,17 @@
 package com.example.demo;
 
+import com.example.demo.FileInfo.FileInfo;
 import com.example.demo.FileTransfer.SmbConnector;
 import com.example.demo.FileTransfer.XLSXReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @RestController
 public class RameCotroller {
@@ -30,9 +34,8 @@ public class RameCotroller {
     }
 
     @GetMapping("/readFile")
-    public String rfile() {
-        xlsxReader.readXLSX("C:\\Users\\gpataraia\\Downloads\\Test.xlsx");
-        return "file read";
+    public ResponseEntity<List<FileInfo>> rfile() {
+        return ResponseEntity.ok().body(xlsxReader.readXLSX("C:\\Users\\gpataraia\\Downloads\\Test.xlsx"));
     }
 
 }
