@@ -47,7 +47,7 @@ public class RameCotroller {
 
     @PostMapping("/excel")
     public ResponseEntity  <String> submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception{
-        fileDownloader.download(file, path);
+        fileDownloader.readFile(file, path);
         return ResponseEntity.ok().body("" + path);
 
     }
