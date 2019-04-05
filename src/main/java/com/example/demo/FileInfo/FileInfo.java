@@ -4,6 +4,7 @@ public class FileInfo {
     private String trajectory;
     private String fileName;
 
+
     public String getTrajectory() {
         return trajectory;
     }
