@@ -6,15 +6,12 @@
 </head>
 <body>
 
-<form name="uploadForm">
-    <div><input type="file"></div>
-    <div><input type="submit" name="submitBtn" value="submit"></div>
-</form>
 
 
-<form action="#" th:action="@{/greeting}" th:object="${greeting}" method="post">
-    <p>Id: <input type="text" th:field="*{id}" /></p>
-    <p>Message: <input type="text" th:field="*{content}" /></p>
+
+<form action="#" th:action="@{/excel}" th:object="${data}" method="post" enctype="multipart/form-data">
+    <p>path: <input type="text" th:field="*{path}" /></p>
+    <p>file: <input type="file" th:field="*{file}" accept=".xls,.xlsx" /></p>
     <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
 </form>
 
