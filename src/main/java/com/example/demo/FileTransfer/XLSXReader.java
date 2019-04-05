@@ -18,10 +18,10 @@ import java.util.List;
 public class XLSXReader {
 
 
-    public List<FileInfo> readXLSX(String path) {
+    public List<FileInfo> readXLSX(File excel) {
         List<FileInfo> result = new ArrayList<>();
         try {
-            File excel = new File(path);
+
             FileInputStream fis = new FileInputStream(excel);
             XSSFWorkbook book = new XSSFWorkbook(fis);
             XSSFSheet sheet = book.getSheetAt(0);
