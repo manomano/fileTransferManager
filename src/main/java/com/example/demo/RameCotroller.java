@@ -37,11 +37,6 @@ public class RameCotroller {
         return "worked";
     }
 
-    /*@GetMapping("/readFile")
-    public ResponseEntity<List<FileInfo>> rfile() {
-        return ResponseEntity.ok().body(xlsxReader.readXLSX("C:\\Users\\\\mjaparidze\\Downloads\\Test.xlsx"));
-    }*/
-
     @Autowired
     private FileDownloader fileDownloader;
 

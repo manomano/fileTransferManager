@@ -28,12 +28,46 @@ public class FileDownloader {
     private SmbConnector smbConnector;
 
 
+    private int[] makeChanks(int listCount, int count){
+        Integer chunk = listCount/count;
+        Integer theRest = listCount - chunk * count;
+        int[] arr = {chunk,theRest};
+        return arr;
+    }
+
+
+
     public List<FileInfo> readFile(MultipartFile file, String path) throws IOException {
 
         File rawFile = toFile(file);
         List<FileInfo> imageList =  xlsxReader.readXLSX(rawFile);
-        Map<String,List<String>> dictionaryMap = new HashMap();
 
+        int workerNum = 5;
+        int partition = imageList.size() /workerNum;
+        Worker[] workers = new Worker[workerNum];
+
+        for (int i = 0; i < workerNum ; i++) {
+            List<FileInfo> workerPart = new ArrayList<>();
+            if(i==workerNum-1){
+                partition += imageList.size() - partition * workerNum;
+            }
+            for (int j = 0; j < partition; j++) {
+                workerPart.add(imageList.get(i*partition + j));
+            }
+
+            try {
+                download(path, workerPart);
+            }catch (Exception e) {
+
+            }
+        }
+
+
+        return null;
+    }
+
+    public void download(String path, List<FileInfo> imageList) throws Exception {
+        Map<String,List<String>> dictionaryMap = new HashMap();
         for(FileInfo row:imageList) {
             if (dictionaryMap.containsKey(row.getTrajectory())){
                 dictionaryMap.get(row.getTrajectory()).add(row.getFileName());
@@ -42,35 +76,26 @@ public class FileDownloader {
                 dictionaryMap.put(row.getTrajectory(), emptyList);
             }
         }
-
-
+        int counter = 0;
         try {
             SmbFile dir = smbConnector.getMainDirectory();
-
-          /*  for(String folderNameFromExcel : dictionaryMap.keySet()){
-                for (SmbFile folder : dir.listFiles((SmbFileFilter) (dir1, name) -> name.startsWith(folderNameFromExcel+"_"))){
-
-
-                }
-            }
-*/
-
             for (SmbFile folder : dir.listFiles()) {
                 String folderName = folder.getName().split("_")[0];
-                if(dictionaryMap.containsKey(folderName)){
+                if (dictionaryMap.containsKey(folderName)) {
                     List<String> folderNameList = dictionaryMap.get(folderName);
 
-                    for(SmbFile preFolder : folder.listFiles()){
+
+                    for (SmbFile preFolder : folder.listFiles()) {
                         //String[] arr = preFolder.getName().split("/");
                         //String exactImageFolderName = arr[arr.length-1];
-                        String exactImageFolderName =  this.getDirName(preFolder);
+                        String exactImageFolderName = this.getDirName(preFolder);
 
-                        if(exactImageFolderName.equals(folderName+"_ExportPanorama")){
+                        if (exactImageFolderName.equals(folderName + "_ExportPanorama")) {
 
-                            for(SmbFile fileObj : preFolder.listFiles()){
-                                if(folderNameList.contains(this.getImageName(fileObj))){
+                            for (SmbFile fileObj : preFolder.listFiles()) {
+                                if (folderNameList.contains(this.getImageName(fileObj))) {
 
-                                    String destFolderPath = path+"/"+folderName;
+                                    String destFolderPath = path + "/" + folderName;
                                     File theDir = new File(destFolderPath);
                                     if (!theDir.exists()) {
                                         theDir.mkdir();
@@ -80,22 +105,21 @@ public class FileDownloader {
                                     IOUtils.copy(fileObj.getInputStream(), new FileOutputStream(new File(theDir, this.getDirName(fileObj))));
                                 }
                             }
-
                         }
-
                     }
                 }
             }
-
-
-        } catch (Exception e) {
+        }catch (Exception e) {
+            System.out.println("failed " + counter++);
             e.printStackTrace();
         }
-
-
-
-        return null;
     }
+
+
+
+
+
+
 
 
     private String getDirName(SmbFile dir){
@@ -117,6 +141,25 @@ public class FileDownloader {
         fos.write(file.getBytes());
         fos.close();
         return convFile;
+    }
+
+
+    private class Worker extends Thread {
+        private List<FileInfo> toDo;
+        private String path;
+        public Worker(List<FileInfo> toDo, String path){
+            this.toDo = toDo;
+            this.path = path;
+        }
+
+        public void run() {
+            try {
+                //download(path,toDo);
+            }catch (Exception e){
+
+            }
+
+        }
     }
 
 
