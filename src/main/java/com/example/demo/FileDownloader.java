@@ -74,6 +74,7 @@ public class FileDownloader {
                 dictionaryMap.get(row.getTrajectory()).add(row.getFileName());
             }else{
                 List<String> emptyList = new ArrayList<>();
+                emptyList.add(row.getFileName());
                 dictionaryMap.put(row.getTrajectory(), emptyList);
             }
         }
