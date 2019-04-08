@@ -27,6 +27,7 @@ public class XLSXReader {
             XSSFSheet sheet = book.getSheetAt(0);
             Iterator<Row> itr = sheet.iterator();
 
+            itr.next();
             while (itr.hasNext()) {
                 Row row = itr.next();
                 Iterator<Cell> cellIterator = row.cellIterator();
@@ -40,8 +41,8 @@ public class XLSXReader {
                     }catch (Exception b) {
 
                     }
-                }
 
+                }
             }
         }catch (Exception e){
             e.printStackTrace();

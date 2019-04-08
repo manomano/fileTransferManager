@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,14 +26,6 @@ public class FileDownloader {
     private SmbConnector smbConnector;
 
 
-    private int[] makeChanks(int listCount, int count){
-        Integer chunk = listCount/count;
-        Integer theRest = listCount - chunk * count;
-        int[] arr = {chunk,theRest};
-        return arr;
-    }
-
-
 
     public List<FileInfo> readFile(MultipartFile file, String path) throws IOException {
 
@@ -45,23 +35,34 @@ public class FileDownloader {
         int workerNum = 5;
         int partition = imageList.size() /workerNum;
         Worker[] workers = new Worker[workerNum];
+        int nashti = 0;
 
-        for (int i = 0; i < workerNum ; i++) {
+       for (int i = 0; i < workerNum ; i++) {
             List<FileInfo> workerPart = new ArrayList<>();
             if(i==workerNum-1){
-                partition += imageList.size() - partition * workerNum;
+                nashti = imageList.size() - partition * workerNum;
             }
-            for (int j = 0; j < partition; j++) {
+            for (int j = 0; j < (partition+nashti); j++) {
                 workerPart.add(imageList.get(i*partition + j));
             }
 
-            try {
-                download(path, workerPart);
-            }catch (Exception e) {
+           Worker worker = new Worker(workerPart,path);
+           workers[i] = worker;
+           worker.start();
 
-            }
+           System.out.println("ulupa: "+workerPart.size());
+
         }
 
+
+        for (int i = 0; i <workers.length ; i++) {
+           try {
+               workers[i].join();
+           }catch (InterruptedException d){
+               d.printStackTrace();
+           }
+
+        }
 
         return null;
     }
@@ -101,8 +102,12 @@ public class FileDownloader {
                                         theDir.mkdir();
                                     }
 
-                                    //IOUtils.copy(fileObj.getInputStream(), new FileOutputStream(new File(theDir, file.getName())));
-                                    IOUtils.copy(fileObj.getInputStream(), new FileOutputStream(new File(theDir, this.getDirName(fileObj))));
+                                    FileOutputStream outputStream  = new FileOutputStream(new File(theDir, this.getDirName(fileObj)));
+                                    InputStream inputStream = fileObj.getInputStream();
+                                    IOUtils.copy(fileObj.getInputStream(), outputStream);
+                                    inputStream.close();
+                                    outputStream.close();
+
                                 }
                             }
                         }
@@ -154,7 +159,7 @@ public class FileDownloader {
 
         public void run() {
             try {
-                //download(path,toDo);
+                download(path,toDo);
             }catch (Exception e){
 
             }
