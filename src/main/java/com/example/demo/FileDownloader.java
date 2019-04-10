@@ -169,4 +169,19 @@ public class FileDownloader {
     }
 
 
+    /*public String splitFolder(String PathTo, int chunckNum) throws Exception {
+
+        File Directory = new File(PathTo);
+        File[] contents = Directory.listFiles();
+        List<String,String> files;
+
+        for(File obj: contents){
+            obj.getName()
+        }
+
+
+        return null;
+    }*/
+
+
 }

@@ -2,14 +2,36 @@ package com.example.demo.FileTransfer;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SmbConnector {
 
-    private String url = "smb://10.10.82.100/backup_wmsstor/";
-    private String user = "gisbackup";
-    private String pass = "Baegu4an";
+    @Value("${source_smb_address}")
+    private String url;
+    @Value("${source_smb_user}")
+    private String user;
+    @Value("${source_smb_pass}")
+    private String pass;
+
+    NtlmPasswordAuthentication auth;
+
+   /* public SmbConnector(){
+        this.auth = new NtlmPasswordAuthentication(null, this.user, this.pass);
+    }*/
+
+    public NtlmPasswordAuthentication authorize(String user,String pass)throws Exception{
+        return new NtlmPasswordAuthentication(null, user, pass);
+    }
+
+
+    public NtlmPasswordAuthentication authorize()throws Exception{
+        return new NtlmPasswordAuthentication(null, this.user, this.pass);
+    }
+
+
+
 
     public void testConnection() {
         try {
