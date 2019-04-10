@@ -48,6 +48,17 @@ public class RameCotroller {
     }
 
 
+    @PostMapping("/splitFolder")
+    public ResponseEntity <String> splitFolder(@RequestParam("folderPath") String folderPath, @RequestParam("chunckSize") int chunckSize)throws Exception{
+        String[] arr =  folderPath.split("\\\\");
+
+        fileDownloader.splitFolder(folderPath.replace("\\"+arr[arr.length-1],""), folderPath, chunckSize, arr[arr.length-1]);
+
+        return null;
+    }
+
+
+
 
 
 

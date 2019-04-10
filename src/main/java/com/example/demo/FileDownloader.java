@@ -2,6 +2,7 @@ package com.example.demo;
 
 
 import com.example.demo.FileInfo.FileInfo;
+import com.example.demo.FileInfo.imageInfo;
 import com.example.demo.FileTransfer.SmbConnector;
 import com.example.demo.FileTransfer.XLSXReader;
 import jcifs.smb.SmbFile;
@@ -10,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class FileDownloader {
@@ -127,7 +126,6 @@ public class FileDownloader {
 
 
 
-
     private String getDirName(SmbFile dir){
         String[] arr = dir.getName().split("/");
         return arr[arr.length-1];
@@ -169,19 +167,64 @@ public class FileDownloader {
     }
 
 
-    /*public String splitFolder(String PathTo, int chunckNum) throws Exception {
+    public void splitFolder(String parentPath, String PathTo, int chunckCount, String folderName) throws Exception {
 
         File Directory = new File(PathTo);
         File[] contents = Directory.listFiles();
-        List<String,String> files;
+        List<imageInfo> fileGrid = new ArrayList<>();;
 
         for(File obj: contents){
-            obj.getName()
+            imageInfo row  = new imageInfo();
+            row.setName(obj.getName());
+            row.setCreationDate(obj.lastModified());
+            fileGrid.add(row);
+        }
+
+        fileGrid.sort(imageInfo::compareTo);
+
+        int folderCount = fileGrid.size()/chunckCount;
+        int nashti = fileGrid.size() - folderCount * chunckCount;
+        if(nashti>0){
+            folderCount++;
         }
 
 
-        return null;
-    }*/
+
+        String curFolderName = "";
+        int index = chunckCount;
+        int k = 2;
+        File firstDir = new File(parentPath+"\\"+folderName+"_2");
+        if (!firstDir.exists()) {
+            firstDir.mkdir();
+        }
+
+
+        for(int i = chunckCount; i <fileGrid.size() ; i++){
+            File sourceFile = new File(PathTo+"/"+fileGrid.get(i).getName());
+            if(sourceFile.renameTo(new File(parentPath+"\\"+folderName+"_"+k+"\\"+fileGrid.get(i).getName()))){
+                System.out.println("File is moved successful!" + fileGrid.get(i).getName());
+            }else{
+                System.out.println("File is failed to move" + fileGrid.get(i).getName());
+            }
+
+            if(index==k*chunckCount-1){
+                k++;
+                File theDir = new File(parentPath+"\\"+folderName+"_"+k);
+                if (!theDir.exists()) {
+                    theDir.mkdir();
+                }
+            }
+            index++;
+        }
+
+        //rename first dir
+        File initialDir = new File(PathTo);
+        initialDir.renameTo(new File(PathTo+"_1"));
+
+
+
+
+    }
 
 
 }
