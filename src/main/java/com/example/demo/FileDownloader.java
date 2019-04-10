@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.demo.Converter.FileConverter.toFile;
+
 @Service
 public class FileDownloader {
 
@@ -140,14 +142,6 @@ public class FileDownloader {
 
 
 
-
-    private File toFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return convFile;
-    }
 
 
     private class Worker extends Thread {

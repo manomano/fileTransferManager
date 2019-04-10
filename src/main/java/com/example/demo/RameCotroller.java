@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.FileCheck.FileChecker;
 import com.example.demo.FileInfo.FileInfo;
 import com.example.demo.FileTransfer.SmbConnector;
 import com.example.demo.FileTransfer.XLSXReader;
@@ -16,12 +17,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class RameCotroller {
 
     @Autowired
     private SmbConnector smbConnector;
+
+    @Autowired
+    private FileChecker fileChecker;
 
     @Autowired
     private XLSXReader xlsxReader;
@@ -45,6 +50,18 @@ public class RameCotroller {
         fileDownloader.readFile(file, path);
         return ResponseEntity.ok().body("" + path);
 
+    }
+
+
+
+    @PostMapping("/check")
+    public ResponseEntity<Map<String,List<String>>> check(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
+        return ResponseEntity.ok().body(fileChecker.check(file,path));
+    }
+
+    @PostMapping("/reverseCheck")
+    public ResponseEntity<Map<String,List<String>>> reverseCheck(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
+        return ResponseEntity.ok().body(fileChecker.reverseCheck(file,path));
     }
 
 
