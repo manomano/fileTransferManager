@@ -42,7 +42,7 @@ public class FileChecker {
                 File subdir = new File(dir + "/" + key);
                 photos = getPhotoNamesFromFile(subdir);
             }catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
 
             List<String> missing = new ArrayList<>();
