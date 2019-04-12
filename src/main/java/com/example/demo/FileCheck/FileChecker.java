@@ -64,7 +64,7 @@ public class FileChecker {
             List<String> curMissing = new ArrayList<>();
             for (File f2 : f.listFiles()) {
                 String photoName = f2.getName().split("\\.")[0];
-                if (!map.get(f.getName()).contains(photoName))
+                if (!map.get(f.getName().split("_")[0]).contains(photoName))
                     curMissing.add(photoName);
             }
             missing.put(f.getName(), curMissing);
