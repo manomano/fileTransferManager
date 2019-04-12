@@ -19,6 +19,62 @@ public class FileChecker {
     private XLSXReader xlsxReader;
 
 
+    public List<Map<String, List<String>>> checkboth(MultipartFile excel, String dir)throws Exception{
+        List<FileInfo> fileInfo = xlsxReader.readXLSX(toFile(excel));
+        Map<String, List<String>> map = getMap(fileInfo);
+        Set<String> keySet = map.keySet();
+
+        List<Map<String, List<String>>> result = new ArrayList<>();
+        result.add(this.check_alone(map, keySet, dir));
+        result.add(this.reverseCheck_alone(map,dir));
+        return result;
+    }
+
+
+    public Map<String, List<String>> check_alone(Map<String, List<String>> map, Set<String> keySet, String dir) throws Exception{
+        Map<String, List<String>> missingPhotos = new HashMap<>();
+
+        for (String key : keySet) {
+            List<String> photos = new ArrayList<>();
+            try {
+                File subdir = new File(dir + "/" + key);
+                photos = getPhotoNamesFromFile(subdir);
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            List<String> missing = new ArrayList<>();
+
+            for (String value : map.get(key)) {
+                if (!photos.contains(value))
+                    missing.add(value);
+            }
+            missingPhotos.put(key, missing);
+        }
+
+        return missingPhotos;
+    }
+
+
+    public Map<String, List<String>> reverseCheck_alone(Map<String, List<String>> map, String dir) throws Exception {
+        File directory = new File(dir);
+        Map<String, List<String>> missing = new HashMap<>();
+
+        for (File f : directory.listFiles()) {
+            List<String> curMissing = new ArrayList<>();
+            for (File f2 : f.listFiles()) {
+                String photoName = f2.getName().split("\\.")[0];
+                if (!map.get(f.getName()).contains(photoName))
+                    curMissing.add(photoName);
+            }
+            missing.put(f.getName(), curMissing);
+        }
+        return missing;
+    }
+
+
+
+
 
     public Map<String, List<String>> check(MultipartFile excel, String dir) throws Exception{
         List<FileInfo> fileInfo = xlsxReader.readXLSX(toFile(excel));
