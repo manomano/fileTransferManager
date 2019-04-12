@@ -81,23 +81,31 @@ public class FileChecker {
         Map<String, List<String>> map = getMap(fileInfo);
         Set<String> keySet = map.keySet();
         Map<String, List<String>> missingPhotos = new HashMap<>();
+        Map<String, List<String>> keySubFolders = emptyMapWithKeyset(keySet);
 
-        for (String key : keySet) {
-            List<String> photos = new ArrayList<>();
-            try {
-                File subdir = new File(dir + "/" + key);
-                photos = getPhotoNamesFromFile(subdir);
-            }catch (Exception e) {
-                e.printStackTrace();
+        for (File f: new File(dir).listFiles()) {
+            String tmpKey = f.getName().split("_")[0];
+            if (keySet.contains(tmpKey)) {
+                keySubFolders.get(tmpKey).add(f.getName());
             }
+        }
 
+        for (String elem : keySet) {
             List<String> missing = new ArrayList<>();
-
-            for (String value : map.get(key)) {
+            List<String> photos = new ArrayList<>();
+            for (String key : keySubFolders.get(elem)) {
+                try {
+                    File subdir = new File(dir + "/" + key);
+                    photos.addAll(getPhotoNamesFromFile(subdir));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            for (String value : map.get(elem)) {
                 if (!photos.contains(value))
                     missing.add(value);
             }
-            missingPhotos.put(key, missing);
+            missingPhotos.put(elem, missing);
         }
 
         return missingPhotos;
@@ -150,6 +158,15 @@ public class FileChecker {
     private String getImageName(SmbFile dir){
         String[] arr = dir.getName().split("/");
         return arr[arr.length-1].split("\\.")[0];
+    }
+
+
+    private Map<String, List<String>> emptyMapWithKeyset(Set<String> keySet) {
+        Map<String, List<String>> result = new HashMap<>();
+        for (String str : keySet) {
+            result.put(str, new ArrayList<>());
+        }
+        return result;
     }
 
 }
