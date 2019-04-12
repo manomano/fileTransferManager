@@ -19,15 +19,17 @@ public class FileChecker {
     private XLSXReader xlsxReader;
 
 
-    public List<Map<String, List<String>>> checkboth(MultipartFile excel, String dir)throws Exception{
+    public Map<String,Map<String, List<String>>> checkboth(MultipartFile excel, String dir)throws Exception{
         List<FileInfo> fileInfo = xlsxReader.readXLSX(toFile(excel));
         Map<String, List<String>> map = getMap(fileInfo);
         Set<String> keySet = map.keySet();
 
         List<Map<String, List<String>>> result = new ArrayList<>();
-        result.add(this.check_alone(map, keySet, dir));
-        result.add(this.reverseCheck_alone(map,dir));
-        return result;
+
+        Map <String,Map<String, List<String>>> resultMap = new HashMap<>();
+        resultMap.put("ფაილები რომლებიც აკლია და ექსელში კი არსებობს შესაბამისი ჩანაწერი", this.check_alone(map, keySet, dir));
+        resultMap.put("ფაილები, რომლებიც არსებობს, მაგრამ ექსელში ჩანაწერი არ არის", this.reverseCheck_alone(map,dir));
+        return resultMap;
     }
 
 
