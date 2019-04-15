@@ -82,7 +82,7 @@ public class RameCotroller {
 
 
     @PostMapping("/checkboth")
-    public ResponseEntity<List<Map<String, List<String>>>> checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
+    public ResponseEntity<Map<String, Map<String, List<String>>>> checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
         return ResponseEntity.ok().body(fileChecker.checkboth(file,path));
     }
 
