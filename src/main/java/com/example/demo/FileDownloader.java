@@ -69,16 +69,7 @@ public class FileDownloader {
     }
 
     public void download(String path, List<FileInfo> imageList) throws Exception {
-        Map<String,List<String>> dictionaryMap = new HashMap();
-        for(FileInfo row:imageList) {
-            if (dictionaryMap.containsKey(row.getTrajectory())){
-                dictionaryMap.get(row.getTrajectory()).add(row.getFileName());
-            }else{
-                List<String> emptyList = new ArrayList<>();
-                emptyList.add(row.getFileName());
-                dictionaryMap.put(row.getTrajectory(), emptyList);
-            }
-        }
+        Map<String,List<String>> dictionaryMap = getMap(imageList);
         int counter = 0;
         try {
             SmbFile dir = smbConnector.getMainDirectory();
@@ -125,6 +116,41 @@ public class FileDownloader {
 
 
 
+    public void downloadFromLocal(String source, String dest, MultipartFile file) throws Exception {
+        File rawFile = toFile(file);
+        List<FileInfo> imageList =  xlsxReader.readXLSX(rawFile);
+        Map<String,List<String>> dictionaryMap = getMap(imageList);
+
+        for (String key: dictionaryMap.keySet()) {
+            String s = source + "\\" + key + "\\";
+            String d = dest + "\\" + key + "\\";
+            for (String fileName : dictionaryMap.get(key)) {
+                try {
+                    File fileToDownload = new File(s + fileName + ".jpg");
+                    File fileDest = new File(d) ;
+                    if (!fileDest.exists()) {
+                        fileDest.mkdir();
+                    }
+
+                    FileInputStream fileInputStream = new FileInputStream(fileToDownload);
+                    FileOutputStream fileOutputStream = new FileOutputStream(new File(d, fileName + ".jpg"));
+
+                    IOUtils.copy(fileInputStream, fileOutputStream);
+
+                    fileInputStream.close();
+                    fileOutputStream.close();
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }
+    }
+
+
+
+
 
 
 
@@ -158,6 +184,20 @@ public class FileDownloader {
             }
 
         }
+    }
+
+    private Map<String, List<String>> getMap(List<FileInfo> fileInfos) {
+        Map<String, List<String>> result = new HashMap<>();
+        for(FileInfo row:fileInfos) {
+            if (result.containsKey(row.getTrajectory())){
+                result.get(row.getTrajectory()).add(row.getFileName());
+            }else{
+                List<String> emptyList = new ArrayList<>();
+                emptyList.add(row.getFileName());
+                result.put(row.getTrajectory(), emptyList);
+            }
+        }
+        return  result;
     }
 
 
@@ -214,10 +254,6 @@ public class FileDownloader {
         //rename first dir
         File initialDir = new File(PathTo);
         initialDir.renameTo(new File(PathTo+"_1"));
-
-
-
-
     }
 
 
