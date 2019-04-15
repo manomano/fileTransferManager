@@ -19,41 +19,47 @@ public class FileChecker {
     private XLSXReader xlsxReader;
 
 
-    public Map<String,Map<String, List<String>>> checkboth(MultipartFile excel, String dir)throws Exception{
+    public List<Map<String, List<String>>> checkboth(MultipartFile excel, String dir)throws Exception{
         List<FileInfo> fileInfo = xlsxReader.readXLSX(toFile(excel));
         Map<String, List<String>> map = getMap(fileInfo);
         Set<String> keySet = map.keySet();
 
         List<Map<String, List<String>>> result = new ArrayList<>();
-
-        Map <String,Map<String, List<String>>> resultMap = new HashMap<>();
-        resultMap.put("ფაილები რომლებიც აკლია და ექსელში კი არსებობს შესაბამისი ჩანაწერი", this.check_alone(map, keySet, dir));
-        resultMap.put("ფაილები, რომლებიც არსებობს, მაგრამ ექსელში ჩანაწერი არ არის", this.reverseCheck_alone(map,dir));
-        return resultMap;
+        result.add(this.check_alone(map, keySet, dir));
+        result.add(this.reverseCheck_alone(map,dir));
+        return result;
     }
 
 
     public Map<String, List<String>> check_alone(Map<String, List<String>> map, Set<String> keySet, String dir) throws Exception{
         Map<String, List<String>> missingPhotos = new HashMap<>();
 
-        for (String key : keySet) {
-            List<String> photos = new ArrayList<>();
-            try {
-                File subdir = new File(dir + "/" + key);
-                photos = getPhotoNamesFromFile(subdir);
-            }catch (Exception e) {
-                //e.printStackTrace();
+        Map<String, List<String>> keySubFolders = emptyMapWithKeyset(keySet);
+
+        for (File f: new File(dir).listFiles()) {
+            String tmpKey = f.getName().split("_")[0];
+            if (keySet.contains(tmpKey)) {
+                keySubFolders.get(tmpKey).add(f.getName());
             }
+        }
 
+        for (String elem : keySet) {
             List<String> missing = new ArrayList<>();
-
-            for (String value : map.get(key)) {
+            List<String> photos = new ArrayList<>();
+            for (String key : keySubFolders.get(elem)) {
+                try {
+                    File subdir = new File(dir + "/" + key);
+                    photos.addAll(getPhotoNamesFromFile(subdir));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            for (String value : map.get(elem)) {
                 if (!photos.contains(value))
                     missing.add(value);
             }
-            missingPhotos.put(key, missing);
+            missingPhotos.put(elem, missing);
         }
-
         return missingPhotos;
     }
 

@@ -6,7 +6,6 @@ import com.example.demo.FileTransfer.SmbConnector;
 import com.example.demo.FileTransfer.XLSXReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +15,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class RameCotroller {
     @Autowired
     private XLSXReader xlsxReader;
 
+
     @GetMapping("/ada")
     public String hello(){
         return "heloo!";
@@ -46,9 +48,6 @@ public class RameCotroller {
 
     @Autowired
     private FileDownloader fileDownloader;
-
-
-    private List<Map<String, List<String>>> checkResult = new ArrayList<>();
 
     @PostMapping("/excel")
     public ResponseEntity  <String> submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception{
@@ -83,31 +82,31 @@ public class RameCotroller {
 
 
     @PostMapping("/checkboth")
-    public ResponseEntity<Map<String,Map<String, List<String>>>> checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
+    public ResponseEntity<List<Map<String, List<String>>>> checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
         return ResponseEntity.ok().body(fileChecker.checkboth(file,path));
     }
 
 
- /*   @PostMapping("/checkboth")
-    public String checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path, ModelMap model) throws Exception {
-        List<Map<String, List<String>>> result = fileChecker.checkboth(file,path);
-        model.addAttribute("result1", result.get(0));
-        model.addAttribute("result2", result.get(1));
-        return "dada";
-    }*/
+    @PostMapping("/checkbothtest")
+    public String checkbothtest(@RequestParam("file") MultipartFile file, @RequestParam("path") String path, RedirectAttributes redirectAttributes) throws Exception {
+        /*ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("tst", fileChecker.checkboth(file,path));
+        modelAndView.setViewName("redirect:/checkbothtest");*/
+        redirectAttributes.addFlashAttribute(fileChecker.checkboth(file,path));
+        return "redirect:/checkbothtest";
+    }
 
-   /* @PostMapping("/checkboth")
-    public String handlePostRequest(@RequestParam("file") MultipartFile file, @RequestParam("path") String path ) throws Exception {
-        checkResult = fileChecker.checkboth(file,path);
-        return "redirect:/checkboth";
-    }*/
-
-   /* @GetMapping("/checkboth")
+    @GetMapping("/checkbothtest")
     public String handleGetRequest(Model model) {
-        model.addAttribute("result1", checkResult.get(0));
-        model.addAttribute("result2", checkResult.get(1));
-        return "index";
-    }*/
+        Object bla = model.asMap().get("hashMapList");
+//        Map<String,List<String>> myObj = model.asMap().get("hashMapList");
+//        List<HashMap<String,String>> res = (List<Map>)model.asMap().get("hashMapList");
+        return "haai";
+    }
+
+
+
+
 
 
 
