@@ -58,6 +58,7 @@
     <button class="tablinks" onclick="openForm(event, 'copy')">ფაილების კოპირება სერვერიდან ცხრილის მიხედვით</button>
     <button class="tablinks" onclick="openForm(event, 'copyloc')">ფაილების კოპირება ლოკალური დირექტორიიდან ცხრილის მიხედვით</button>
     <button class="tablinks" onclick="openForm(event, 'split')">ფოლდერის დაშლა</button>
+    <button class="tablinks" onclick="openForm(event, 'splitnew')">ფოლდერის დაშლა(ორიგინალის შენარჩუნებით)</button>
     <button class="tablinks" onclick="openForm(event, 'checkboth')">ფაილების შემოწმება</button>
 </div>
 
@@ -84,6 +85,15 @@
     <form action="/splitFolder" th:action="@{/splitFolder}" th:object="${data}" method="post" enctype="multipart/form-data">
         <p>ფოლდერის მისამართი თქვენს კომპიუტერზე: <input type="text" th:field="*{folderPath}" name="folderPath" /></p>
         <p>მაქსიმალური ფაილების ოდენობა თითო ფოლდერში: <input type="number" th:field="*{chunckSize}" name="chunckSize"  /></p>
+        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+    </form>
+</div>
+<div id="splitnew" class="tabcontent">
+    <h3>დიდი ფოლდერის დაშლა</h3>
+    <form action="/split" th:action="@{/split}" th:object="${data}" method="post" enctype="multipart/form-data">
+        <p>დასაშლელი ფოლდერის მისამართი თქვენს კომპიუტერზე: <input type="src" th:field="*{src}" name="src" /></p>
+        <p>ჩაწერის მისამართი: <input type="dest" th:field="*{dest}" name="dest" /></p>
+        <p>მაქსიმალური ფაილების ოდენობა თითო ფოლდერში: <input type="number" th:field="*{chunkSize}" name="chunkSize"  /></p>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     </form>
 </div>
