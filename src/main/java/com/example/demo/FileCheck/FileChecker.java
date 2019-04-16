@@ -25,8 +25,8 @@ public class FileChecker {
         Set<String> keySet = map.keySet();
         Map<String, Map<String, List<String>>> resultMap = new HashMap<>();
 
-        resultMap.put("ფაილები რომლებიც აკლია და ექსელში კი არსებობს შესაბამისი ჩანაწერი",this.check_alone(map, keySet, dir));
-        resultMap.put("ფაილები, რომლებიც არსებობს, მაგრამ ექსელში ჩანაწერი არ არის",this.reverseCheck_alone(map,dir));
+        resultMap.put("ფოტო არ არის",this.check_alone(map, keySet, dir));
+        resultMap.put("XLSX ში არ არის",this.reverseCheck_alone(map,dir));
         return resultMap;
     }
 
