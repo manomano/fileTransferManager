@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 public class RameCotroller {
 
     @Autowired
@@ -54,6 +54,19 @@ public class RameCotroller {
         fileDownloader.readFile(file, path);
         return ResponseEntity.ok().body("" + path);
 
+    }
+
+    @PostMapping("/localDownload")
+    public ResponseEntity  <String> submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("dest") String dest, @RequestParam("src") String src) throws Exception{
+        fileDownloader.downloadFromLocal(src,dest,file);
+        return ResponseEntity.ok().body("" + dest);
+
+    }
+
+    @PostMapping("/split")
+    public ResponseEntity <String> splitF(@RequestParam("src") String src,@RequestParam("dest")String dest, @RequestParam("chunkSize") int chunckSize)throws Exception{
+        fileDownloader.splitFolder(src,dest,chunckSize);
+        return ResponseEntity.ok().body("DONE");
     }
 
 
@@ -103,14 +116,6 @@ public class RameCotroller {
 //        List<HashMap<String,String>> res = (List<Map>)model.asMap().get("hashMapList");
         return "haai";
     }
-
-
-
-
-
-
-
-
 
 
 }
