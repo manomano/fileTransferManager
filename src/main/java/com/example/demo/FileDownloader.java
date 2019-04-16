@@ -149,6 +149,39 @@ public class FileDownloader {
     }
 
 
+    public void splitFolder(String src, String dst, int chunkSize) throws Exception{
+        File file = new File(src);
+        File[] images = file.listFiles();
+        int folderNum = 0;
+        String finalPath = dst + "\\" + file.getName() + "_";
+        int counter = 0;
+
+        for (File f : images) {
+            String newPath = finalPath + folderNum;
+            File newFile = new File(newPath);
+            if (!newFile.exists())
+                newFile.mkdir();
+
+            FileInputStream fileInputStream = new FileInputStream(f);
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(newPath, f.getName()));
+
+            IOUtils.copy(fileInputStream, fileOutputStream);
+
+            fileInputStream.close();
+            fileOutputStream.close();
+            counter++;
+            if (counter == chunkSize) {
+                folderNum++;
+                counter = 0;
+            }
+
+        }
+
+
+
+    }
+
+
 
 
 

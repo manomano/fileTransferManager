@@ -55,7 +55,8 @@
 
 
 <div class="tab">
-    <button class="tablinks" onclick="openForm(event, 'copy')">ფაილების კოპირება ცხრილის მიხედვით</button>
+    <button class="tablinks" onclick="openForm(event, 'copy')">ფაილების კოპირება სერვერიდან ცხრილის მიხედვით</button>
+    <button class="tablinks" onclick="openForm(event, 'copyloc')">ფაილების კოპირება ლოკალური დირექტორიიდან ცხრილის მიხედვით</button>
     <button class="tablinks" onclick="openForm(event, 'split')">ფოლდერის დაშლა</button>
     <button class="tablinks" onclick="openForm(event, 'checkboth')">ფაილების შემოწმება</button>
 </div>
@@ -64,6 +65,15 @@
     <h3>ფაილების კოპირება სერვერიდან თქვენს კომპიუტერზე ცხრილის მიხედვით</h3>
     <form action="/excel" th:action="@{/excel}" th:object="${data}" method="post" enctype="multipart/form-data">
         <p>ფოლდერის მისამართი სადაც უნდა მოხდეს კოპირება: <input type="text" th:field="*{path}" name="path" /></p>
+        <p>ექსელის ფაილი: <input type="file" th:field="*{file}" name="file" accept=".xls,.xlsx" /></p>
+        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+    </form>
+</div>
+<div id="copyloc" class="tabcontent">
+    <h3>ფაილების კოპირება ლოკალიდან სხვა დირექტორიაში ცხრილის მიხედვით</h3>
+    <form action="/localDownload" th:action="@{/localDownload}" th:object="${data}" method="post" enctype="multipart/form-data">
+        <p>ფოლდერის მისამართი საიდანაც უნდა მოხდეს კოპირება: <input type="text" th:field="*{src}" name="src" /></p>
+        <p>ფოლდერის მისამართი სადაც უნდა მოხდეს კოპირება: <input type="text" th:field="*{dest}" name="dest" /></p>
         <p>ექსელის ფაილი: <input type="file" th:field="*{file}" name="file" accept=".xls,.xlsx" /></p>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     </form>
@@ -85,10 +95,8 @@
         <p>ექსელის ფაილი: <input type="file" th:field="*{file}" name="file" accept=".xls,.xlsx" /></p>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     </form>
-
-
-
 </div>
+
 
 
 

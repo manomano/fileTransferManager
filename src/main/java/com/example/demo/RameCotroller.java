@@ -63,6 +63,12 @@ public class RameCotroller {
 
     }
 
+    @PostMapping("/split")
+    public ResponseEntity <String> splitF(@RequestParam("src") String src,@RequestParam("dest")String dest, @RequestParam("chunkSize") int chunckSize)throws Exception{
+        fileDownloader.splitFolder(src,dest,chunckSize);
+        return ResponseEntity.ok().body("DONE");
+    }
+
 
     @PostMapping("/splitFolder")
     public ResponseEntity <String> splitFolder(@RequestParam("folderPath") String folderPath, @RequestParam("chunckSize") int chunckSize)throws Exception{
@@ -110,14 +116,6 @@ public class RameCotroller {
 //        List<HashMap<String,String>> res = (List<Map>)model.asMap().get("hashMapList");
         return "haai";
     }
-
-
-
-
-
-
-
-
 
 
 }
