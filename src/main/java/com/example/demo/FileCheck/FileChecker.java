@@ -70,6 +70,7 @@ public class FileChecker {
 
         for (File f : directory.listFiles()) {
             List<String> curMissing = new ArrayList<>();
+            if (!f.isDirectory()) continue;
             for (File f2 : f.listFiles()) {
                 String photoName = f2.getName().split("\\.")[0];
                 if (!map.get(f.getName().split("_")[0]).contains(photoName))
@@ -127,7 +128,9 @@ public class FileChecker {
 
         for (File f : directory.listFiles()) {
             List<String> curMissing = new ArrayList<>();
-            for (File f2 : f.listFiles()) {
+            File[] files = f.listFiles();
+            if ( files.length == 0) continue;
+            for (File f2 : files) {
                 String photoName = f2.getName().split("\\.")[0];
                 if (!map.get(f.getName().split("_")[0]).contains(photoName))
                     curMissing.add(photoName);
