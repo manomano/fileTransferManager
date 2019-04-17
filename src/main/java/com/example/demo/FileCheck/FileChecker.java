@@ -25,8 +25,8 @@ public class FileChecker {
         Set<String> keySet = map.keySet();
         Map<String, Map<String, List<String>>> resultMap = new HashMap<>();
 
-        resultMap.put("ფაილები რომლებიც აკლია და ექსელში კი არსებობს შესაბამისი ჩანაწერი",this.check_alone(map, keySet, dir));
-        resultMap.put("ფაილები, რომლებიც არსებობს, მაგრამ ექსელში ჩანაწერი არ არის",this.reverseCheck_alone(map,dir));
+        resultMap.put("ფოტო არ არის",this.check_alone(map, keySet, dir));
+        resultMap.put("XLSX ში არ არის",this.reverseCheck_alone(map,dir));
         return resultMap;
     }
 
@@ -70,6 +70,7 @@ public class FileChecker {
 
         for (File f : directory.listFiles()) {
             List<String> curMissing = new ArrayList<>();
+            if (!f.isDirectory()) continue;
             for (File f2 : f.listFiles()) {
                 String photoName = f2.getName().split("\\.")[0];
                 if (!map.get(f.getName().split("_")[0]).contains(photoName))
@@ -127,7 +128,9 @@ public class FileChecker {
 
         for (File f : directory.listFiles()) {
             List<String> curMissing = new ArrayList<>();
-            for (File f2 : f.listFiles()) {
+            File[] files = f.listFiles();
+            if ( files.length == 0) continue;
+            for (File f2 : files) {
                 String photoName = f2.getName().split("\\.")[0];
                 if (!map.get(f.getName().split("_")[0]).contains(photoName))
                     curMissing.add(photoName);

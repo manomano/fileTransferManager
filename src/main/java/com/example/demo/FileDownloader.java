@@ -152,7 +152,7 @@ public class FileDownloader {
     public void splitFolder(String src, String dst, int chunkSize) throws Exception{
         File file = new File(src);
         File[] images = file.listFiles();
-        int folderNum = 0;
+        int folderNum = 1;
         String finalPath = dst + "\\" + file.getName() + "_";
         int counter = 0;
 
