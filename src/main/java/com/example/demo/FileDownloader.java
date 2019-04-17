@@ -191,8 +191,6 @@ public class FileDownloader {
 
         }
 
-
-
     }
 
     private String getDirName(SmbFile dir){
