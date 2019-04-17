@@ -3,6 +3,7 @@
 <head>
     <title>ფაილების მენეჯერი</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <style>
 
        body {font-family: Arial;}
@@ -64,11 +65,12 @@
 
 <div id="copy" class="tabcontent">
     <h3>ფაილების კოპირება სერვერიდან თქვენს კომპიუტერზე ცხრილის მიხედვით</h3>
-    <form action="/excel" th:action="@{/excel}" th:object="${data}" method="post" enctype="multipart/form-data">
+    <form id="excel" action="/excel" th:action="@{/excel}" th:object="${data}" method="post" enctype="multipart/form-data">
         <p>ფოლდერის მისამართი სადაც უნდა მოხდეს კოპირება: <input type="text" th:field="*{path}" name="path" /></p>
         <p>ექსელის ფაილი: <input type="file" th:field="*{file}" name="file" accept=".xls,.xlsx" /></p>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     </form>
+    <div id="progress"></div>
 </div>
 <div id="copyloc" class="tabcontent">
     <h3>ფაილების კოპირება ლოკალიდან სხვა დირექტორიაში ცხრილის მიხედვით</h3>
@@ -124,6 +126,39 @@ function openForm(evt, action) {
   document.getElementById(action).style.display = "block";
   evt.currentTarget.className += " active";
 }
+
+
+$("#excel").submit(function(event) {
+
+
+                event.preventDefault();
+
+                var $form = $(this),
+                url = $form.attr('action');
+
+                var form = $('#excel')[0];
+                let fm = new FormData(form);
+
+
+                 $.ajax({
+                   url: url,
+                   type: 'POST',
+                   data: fm,
+                   cache: false,
+                   contentType: false,
+                   enctype: 'multipart/form-data',
+                   processData: false,
+                   success: function (response) {
+                     $("#progress").empty().append(response);
+                   }
+               });
+
+
+
+
+            });
+
+
 </script>
 </body>
 </html>
