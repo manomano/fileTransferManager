@@ -120,30 +120,44 @@ public class FileDownloader {
         File rawFile = toFile(file);
         List<FileInfo> imageList =  xlsxReader.readXLSX(rawFile);
         Map<String,List<String>> dictionaryMap = getMap(imageList);
+        File sourceDir = new File(source);
+        Set<String> keySet = dictionaryMap.keySet();
+        Map<String, List<String>> subFolders = emptyMap(keySet);
+        for (File f : sourceDir.listFiles()) {
+            String sub = f.getName().split("_")[0];
+            if(keySet.contains(sub))
+                subFolders.get(sub).add(f.getName());
+        }
+        int counter = 0;
+
+
+
 
         for (String key: dictionaryMap.keySet()) {
-            String s = source + "\\" + key + "\\";
             String d = dest + "\\" + key + "\\";
-            for (String fileName : dictionaryMap.get(key)) {
-                try {
-                    File fileToDownload = new File(s + fileName + ".jpg");
-                    File fileDest = new File(d) ;
-                    if (!fileDest.exists()) {
-                        fileDest.mkdir();
+            for (String subKey : subFolders.get(key)) {
+                String s = source + "\\" + subKey + "\\";
+                for (String fileName : dictionaryMap.get(key)) {
+                    try {
+                        File fileToDownload = new File(s + fileName + ".jpg");
+                        File fileDest = new File(d);
+                        if (!fileDest.exists()) {
+                            fileDest.mkdir();
+                        }
+
+                        FileInputStream fileInputStream = new FileInputStream(fileToDownload);
+                        FileOutputStream fileOutputStream = new FileOutputStream(new File(d, fileName + ".jpg"));
+
+                        IOUtils.copy(fileInputStream, fileOutputStream);
+
+                        fileInputStream.close();
+                        fileOutputStream.close();
+                        System.out.println(counter++);
+
+                    } catch (Exception e) {
+
                     }
-
-                    FileInputStream fileInputStream = new FileInputStream(fileToDownload);
-                    FileOutputStream fileOutputStream = new FileOutputStream(new File(d, fileName + ".jpg"));
-
-                    IOUtils.copy(fileInputStream, fileOutputStream);
-
-                    fileInputStream.close();
-                    fileOutputStream.close();
-
-                }catch (Exception e){
-                    e.printStackTrace();
                 }
-
             }
         }
     }
@@ -180,12 +194,6 @@ public class FileDownloader {
 
 
     }
-
-
-
-
-
-
 
     private String getDirName(SmbFile dir){
         String[] arr = dir.getName().split("/");
@@ -287,6 +295,15 @@ public class FileDownloader {
         //rename first dir
         File initialDir = new File(PathTo);
         initialDir.renameTo(new File(PathTo+"_1"));
+    }
+
+
+    private Map<String, List<String>> emptyMap(Set<String> set) {
+        Map<String,List<String>> res = new HashMap<>();
+        for (String s : set) {
+            res.put(s, new ArrayList<>());
+        }
+        return res;
     }
 
 

@@ -73,7 +73,10 @@ public class FileChecker {
             if (!f.isDirectory()) continue;
             for (File f2 : f.listFiles()) {
                 String photoName = f2.getName().split("\\.")[0];
-                if (!map.get(f.getName().split("_")[0]).contains(photoName))
+                String key = f.getName().split("_")[0];
+                if (!map.containsKey(key))
+                    map.put(key, new ArrayList<>());
+                if (!map.get(key).contains(photoName))
                     curMissing.add(photoName);
             }
             missing.put(f.getName(), curMissing);
