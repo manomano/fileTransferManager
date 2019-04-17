@@ -152,7 +152,7 @@ public class FileDownloader {
 
                         fileInputStream.close();
                         fileOutputStream.close();
-                        System.out.println(counter++);
+                        System.out.println(++counter);
 
                     } catch (Exception e) {
 
