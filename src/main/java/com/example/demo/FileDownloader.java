@@ -129,6 +129,9 @@ public class FileDownloader {
     public void downloadFromLocal(String source, String dest, MultipartFile file) throws Exception {
         File rawFile = toFile(file);
         List<FileInfo> imageList =  xlsxReader.readXLSX(rawFile);
+        FileDownloader.FileCounter = 0;
+        FileDownloader.FilesToDownload = imageList.size();
+
         Map<String,List<String>> dictionaryMap = getMap(imageList);
         File sourceDir = new File(source);
         Set<String> keySet = dictionaryMap.keySet();
@@ -162,7 +165,7 @@ public class FileDownloader {
 
                         fileInputStream.close();
                         fileOutputStream.close();
-                        System.out.println(++counter);
+                        FileCounter++;
 
                     } catch (Exception e) {
 

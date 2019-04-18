@@ -23,6 +23,15 @@ public class ProcessDepicting {
         //return FileDownloader.FileCounter;
     }
 
+    @MessageMapping("/localDownload")
+    @SendTo("/download/copyingFromServer")
+    public String fileProgressLoc(String ragaca) throws Exception {
+        FireSending fSending = new FireSending(this);
+        fSending.run();
+        return ""+FileDownloader.FilesToDownload+"-"+FileDownloader.FileCounter;
+        //return FileDownloader.FileCounter;
+    }
+
 
     public void updateInfo (){
             this.template.convertAndSend("/download/copyingFromServer", ""+FileDownloader.FilesToDownload+"-"+FileDownloader.FileCounter);
