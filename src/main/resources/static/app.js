@@ -21,7 +21,7 @@ function openForm(evt, action) {
 
 
 function setConnected(connected) {
-    startTime = new Date();
+    startTime = new Date().getTime();
     $("#info_excel").show();
 
 
@@ -109,7 +109,7 @@ $( document ).ready(function() {
                enctype: 'multipart/form-data',
                processData: false,
                success: function (response) {
-                let seconds = (new Date - startTime)/1000;
+                let seconds = (new Date().getTime() - startTime)/1000;
 
                  $("#progressInfo").empty().append("წამი: "+seconds);
                }
