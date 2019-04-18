@@ -27,12 +27,20 @@ public class FileDownloader {
     @Autowired
     private SmbConnector smbConnector;
 
+    static int FileCounter = 0;
+    static int FilesToDownload = 0;
+    private synchronized void incrementFileCounter(){
+       FileCounter++;
+
+    }
+
 
 
     public List<FileInfo> readFile(MultipartFile file, String path) throws IOException {
 
         File rawFile = toFile(file);
         List<FileInfo> imageList =  xlsxReader.readXLSX(rawFile);
+        FilesToDownload = imageList.size();
 
         int workerNum = 5;
         int partition = imageList.size() /workerNum;
@@ -101,6 +109,7 @@ public class FileDownloader {
                                     IOUtils.copy(fileObj.getInputStream(), outputStream);
                                     inputStream.close();
                                     outputStream.close();
+                                    incrementFileCounter();
 
                                 }
                             }

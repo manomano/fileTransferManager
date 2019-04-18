@@ -1,16 +1,32 @@
 var stompClient = null;
+var startTime = null;
+
+
+function openForm(evt, action) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(action).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+
+
+
 
 function setConnected(connected) {
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
-    if (connected) {
-        $("#conversation").show();
-    }
-    else {
-        $("#conversation").hide();
-    }
-    $("#greetings").html("");
+    startTime = new Date();
+    $("#info_excel").show();
+
+
 }
+
 
 function connect() {
     var socket = new SockJS('/gs-guide-websocket');
@@ -18,12 +34,12 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
+        stompClient.subscribe('/download/copyingFromServer', function (greeting) {
+            showResponse(JSON.parse(greeting.body).content);
         });
     });
 }
-
+/*
 function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();
@@ -35,18 +51,71 @@ function disconnect() {
 function sendName() {
     stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
 }
+*/
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function showResponse(message) {
+    let response = message.split("-");
+    document.getElementById("filesToDownload").innerHTML = response[0];
+    document.getElementById("filesDownloaded").innerHTML = response[1];
+
+    //$("#progressTable").append("<tr><td>" + message + "</td></tr>");
 }
 
 $(function () {
-    $("form").on('submit', function (e) {
+   /* $("form").on('submit', function (e) {
         e.preventDefault();
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
+    $( "#send" ).click(function() { sendName(); });*/
 });
 
 
+let a = {};
+a.connect = connect;
+
+$( document ).ready(function() {
+        $("#excel").submit(function(event) {
+            var fada = a.connect;
+            event.preventDefault();
+
+            var $form = $(this),
+            url = $form.attr('action');
+            $("#info_excel").show();
+
+             var socket = new SockJS('/gs-guide-websocket');
+                            stompClient = Stomp.over(socket);
+                            stompClient.connect({}, function (frame) {
+                                //setConnected(true);
+                                console.log('Connected:gaeshvaaa ' + frame);
+                                stompClient.subscribe('/download/copyingFromServer', function (greeting) {
+                                    showResponse(greeting.body);
+                                });
+
+                                stompClient.send("/excel", {}, "dadada");
+
+
+                            });
+
+
+            var form = $('#excel')[0];
+            let fm = new FormData(form);
+             $.ajax({
+               url: url,
+               type: 'POST',
+               data: fm,
+               cache: false,
+               contentType: false,
+               enctype: 'multipart/form-data',
+               processData: false,
+               success: function (response) {
+                let seconds = (new Date - startTime)/1000;
+
+                 $("#progressInfo").empty().append("წამი: "+seconds);
+               }
+           });
+
+        });
+
+
+});
