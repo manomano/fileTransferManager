@@ -114,10 +114,7 @@ $( document ).ready(function() {
                  $("#progressInfo").empty().append("წამი: "+seconds);
                }
            });
-
         });
-
-
 });
 
 $( document ).ready(function() {
@@ -143,7 +140,6 @@ $( document ).ready(function() {
 
         });
 
-
         var form = $('#copyloc')[0];
         let fm = new FormData(form);
         $.ajax({
@@ -159,8 +155,6 @@ $( document ).ready(function() {
                 $("#progressInfo1").empty().append("წამი: "+seconds);
             }
         });
-
     });
-
-
 });
+
