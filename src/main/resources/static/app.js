@@ -53,12 +53,11 @@ function sendName() {
 }
 */
 
-function showResponse(message) {
+function showResponse(message, motherDivId) {
     let response = message.split("-");
-    document.getElementById("filesToDownload").innerHTML = response[0];
-    document.getElementById("filesDownloaded").innerHTML = response[1];
+    document.getElementById(motherDivId).innerHTML = "<span>გადმოსაწერი ფაილების ოდენობა: </span><span>"+response[0]+"</span><span> გადმოწერილი ფაილების ოდენობა: </span> <span>"+response[1]+"</span>"
 
-    //$("#progressTable").append("<tr><td>" + message + "</td></tr>");
+
 }
 
 $(function () {
@@ -89,7 +88,7 @@ $( document ).ready(function() {
                                 //setConnected(true);
                                 console.log('Connected:gaeshvaaa ' + frame);
                                 stompClient.subscribe('/download/copyingFromServer', function (greeting) {
-                                    showResponse(greeting.body);
+                                    showResponse(greeting.body,"info_excel");
                                 });
 
                                 stompClient.send("/excel", {}, "dadada");
@@ -115,46 +114,50 @@ $( document ).ready(function() {
                }
            });
         });
-});
 
-$( document ).ready(function() {
-    $("#copyloc").submit(function(event) {
-        var fada = a.connect;
-        event.preventDefault();
 
-        var $form = $(this),
-            url = $form.attr('action');
-        $("#info_excel1").show();
+        $("#copylocal").submit(function(event) {
+                var fada = a.connect;
+                event.preventDefault();
 
-        var socket = new SockJS('/gs-guide-websocket');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
-            //setConnected(true);
-            console.log('Connected:gaeshvaaa ' + frame);
-            stompClient.subscribe('/download/copyingFromServer', function (greeting) {
-                showResponse(greeting.body);
+                var $form = $(this),
+                    url = $form.attr('action');
+                $("#info_excel1").show();
+
+                var socket = new SockJS('/gs-guide-websocket');
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function (frame) {
+                    //setConnected(true);
+                    console.log('Connected:gaeshvaaa ' + frame);
+                    stompClient.subscribe('/download/copyingFromServer', function (greeting) {
+                        showResponse(greeting.body,"info_excel1");
+                    });
+
+                    stompClient.send("/localDownload", {}, "dadada");
+
+
+                });
+
+                var form = $('#copylocal')[0];
+                let fm = new FormData(form);
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: fm,
+                    cache: false,
+                    contentType: false,
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                    success: function (response) {
+                        let seconds = (new Date() - startTime)/1000;
+                        $("#progressInfo1").empty().append("წამი: "+seconds);
+                    }
+                });
             });
 
-            stompClient.send("/localDownload", {}, "dadada");
 
 
-        });
 
-        var form = $('#copyloc')[0];
-        let fm = new FormData(form);
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: fm,
-            cache: false,
-            contentType: false,
-            enctype: 'multipart/form-data',
-            processData: false,
-            success: function (response) {
-                let seconds = (new Date() - startTime)/1000;
-                $("#progressInfo1").empty().append("წამი: "+seconds);
-            }
-        });
-    });
 });
+
 
