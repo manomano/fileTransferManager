@@ -51,6 +51,7 @@ public class RameCotroller {
 
     @PostMapping("/excel")
     public ResponseEntity  <String> submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception{
+        FileDownloader.FileCounter = 0;
         fileDownloader.readFile(file, path);
         return ResponseEntity.ok().body("" + path);
 
@@ -116,6 +117,9 @@ public class RameCotroller {
 //        List<HashMap<String,String>> res = (List<Map>)model.asMap().get("hashMapList");
         return "haai";
     }
+
+
+
 
 
 }
