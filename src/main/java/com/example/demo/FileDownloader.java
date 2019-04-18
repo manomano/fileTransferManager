@@ -1,6 +1,5 @@
 package com.example.demo;
 
-
 import com.example.demo.FileInfo.FileInfo;
 import com.example.demo.FileInfo.imageInfo;
 import com.example.demo.FileTransfer.SmbConnector;
@@ -19,6 +18,8 @@ import static com.example.demo.Converter.FileConverter.toFile;
 
 @Service
 public class FileDownloader {
+
+    private static int bla = 5;
 
     @Autowired
     private XLSXReader xlsxReader;
@@ -161,6 +162,7 @@ public class FileDownloader {
             }
         }
     }
+
 
 
     public void splitFolder(String src, String dst, int chunkSize) throws Exception{

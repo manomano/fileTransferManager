@@ -29,6 +29,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/gs-guide-websocket").withSockJS();
     }
 
+
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration webSocketTransportRegistration) {
 
@@ -58,5 +59,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public boolean configureMessageConverters(List<MessageConverter> list) {
         return false;
     }
-
 }
