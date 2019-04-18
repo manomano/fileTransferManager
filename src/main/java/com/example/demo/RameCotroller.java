@@ -58,10 +58,9 @@ public class RameCotroller {
     }
 
     @PostMapping("/localDownload")
-    public ResponseEntity  <String> submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("dest") String dest, @RequestParam("src") String src) throws Exception{
+    public ResponseEntity<Map<String, List<String>> > submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("dest") String dest, @RequestParam("src") String src) throws Exception{
         fileDownloader.downloadFromLocal(src,dest,file);
-        return ResponseEntity.ok().body("" + dest);
-
+        return ResponseEntity.ok().body(fileChecker.check(file, dest));
     }
 
     @PostMapping("/split")

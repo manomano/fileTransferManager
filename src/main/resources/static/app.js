@@ -74,9 +74,35 @@ let a = {};
 a.connect = connect;
 
 $( document ).ready(function() {
+
+function returnTimePassed(seconds){
+    let theRestSeconds = seconds % 3600;
+    let hours = (seconds - (theRestSeconds))/3600;
+
+    let minutes = (theRestSeconds - (theRestSeconds%60))/60;
+    seconds  = theRestSeconds%60;
+
+    let answer = "";
+    if(hours){
+        answer +="საათი: " + hours;
+    }
+
+    if(minutes){
+            answer +=" წუთი: " + minutes;
+    }
+
+    if(seconds){
+        answer +=" წამი: " + seconds;
+    }
+
+    return answer;
+
+
+}
         $("#excel").submit(function(event) {
             var fada = a.connect;
             event.preventDefault();
+            startTime = new Date();
 
             var $form = $(this),
             url = $form.attr('action');
@@ -108,9 +134,8 @@ $( document ).ready(function() {
                enctype: 'multipart/form-data',
                processData: false,
                success: function (response) {
-                let seconds = (new Date() - startTime)/1000;
-
-                 $("#progressInfo").empty().append("წამი: "+seconds);
+                let seconds = Math.floor((new Date().getTime() - startTime.getTime())/1000);
+                 $("#progressInfo").empty().append(returnTimePassed(seconds));
                }
            });
         });
@@ -119,6 +144,7 @@ $( document ).ready(function() {
         $("#copylocal").submit(function(event) {
                 var fada = a.connect;
                 event.preventDefault();
+                startTime = new Date();
 
                 var $form = $(this),
                     url = $form.attr('action');
@@ -149,8 +175,21 @@ $( document ).ready(function() {
                     enctype: 'multipart/form-data',
                     processData: false,
                     success: function (response) {
-                        let seconds = (new Date() - startTime)/1000;
-                        $("#progressInfo1").empty().append("წამი: "+seconds);
+                        let seconds = Math.floor((new Date().getTime() - startTime.getTime())/1000);
+                        $("#progressInfo1").empty().append(returnTimePassed(seconds));
+                        $("#response_copylocal").empty().append(" <h2>ფაილები აკლია</h2><table class='table table-striped' ><thead><tr><th>ფოლდერი</th><th>ფაილი</th></tr></thead><tbody id='response_copylocal_tr'></tbody></table>");
+                        let data = response;
+                        for(let val in response){
+                            if(response[val].length==0){
+                                $("#response_copylocal_tr").append("<tr><td>"+val+"</td><td>0</td></tr>")
+                            }else{
+                                for(let a in response[val]){
+                                   $("#response_copylocal_tr").append("<tr><td>"+val+"</td><td>"+response[val][a]+"</td></tr>")
+                                }
+                            }
+
+                        }
+
                     }
                 });
             });
