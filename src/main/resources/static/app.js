@@ -57,7 +57,7 @@ function showResponse(message, motherDivId) {
     let response = message.split("-");
     document.getElementById(motherDivId).innerHTML = "<span>გადმოსაწერი ფაილების ოდენობა: </span><span>"+response[0]+"</span><span> გადმოწერილი ფაილების ოდენობა: </span> <span>"+response[1]+"</span>"
 
-
+    //$("#progressTable").append("<tr><td>" + message + "</td></tr>");
 }
 
 $(function () {
@@ -102,7 +102,6 @@ function returnTimePassed(seconds){
         $("#excel").submit(function(event) {
             var fada = a.connect;
             event.preventDefault();
-            startTime = new Date();
 
             var $form = $(this),
             url = $form.attr('action');
@@ -188,15 +187,11 @@ function returnTimePassed(seconds){
                                 }
                             }
 
-                        }
+                 $("#progressInfo").empty().append("წამი: "+seconds);
+               }
+           });
 
-                    }
-                });
-            });
-
-
+        });
 
 
 });
-
-
