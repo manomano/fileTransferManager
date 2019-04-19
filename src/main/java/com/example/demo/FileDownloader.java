@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import com.example.demo.Converter.Progress;
+import com.example.demo.Converter.ProgressBar;
 import com.example.demo.FileInfo.FileInfo;
 import com.example.demo.FileInfo.imageInfo;
 import com.example.demo.FileTransfer.SmbConnector;
@@ -27,12 +29,6 @@ public class FileDownloader {
     @Autowired
     private SmbConnector smbConnector;
 
-    static int FileCounter = 0;
-    static int FilesToDownload = 0;
-    private synchronized void incrementFileCounter(){
-       FileCounter++;
-
-    }
 
 
 
@@ -40,7 +36,6 @@ public class FileDownloader {
 
         File rawFile = toFile(file);
         List<FileInfo> imageList =  xlsxReader.readXLSX(rawFile);
-        FilesToDownload = imageList.size();
 
         int workerNum = 5;
         int partition = imageList.size() /workerNum;
@@ -79,6 +74,9 @@ public class FileDownloader {
 
     public void download(String path, List<FileInfo> imageList) throws Exception {
         Map<String,List<String>> dictionaryMap = getMap(imageList);
+        ProgressBar progressBar = new ProgressBar(0, imageList.size());
+        Progress.PROGRESS_BAR.put(Progress.INDEX++, progressBar);
+
         int counter = 0;
         try {
             SmbFile dir = smbConnector.getMainDirectory();
@@ -109,7 +107,7 @@ public class FileDownloader {
                                     IOUtils.copy(fileObj.getInputStream(), outputStream);
                                     inputStream.close();
                                     outputStream.close();
-                                    incrementFileCounter();
+                                    progressBar.inc();
 
                                 }
                             }
@@ -129,8 +127,8 @@ public class FileDownloader {
     public void downloadFromLocal(String source, String dest, MultipartFile file) throws Exception {
         File rawFile = toFile(file);
         List<FileInfo> imageList =  xlsxReader.readXLSX(rawFile);
-        FileDownloader.FileCounter = 0;
-        FileDownloader.FilesToDownload = imageList.size();
+        ProgressBar progressBar = new ProgressBar(0, imageList.size());
+        Progress.PROGRESS_BAR.put(Progress.INDEX++, progressBar);
 
         Map<String,List<String>> dictionaryMap = getMap(imageList);
         File sourceDir = new File(source);
@@ -165,7 +163,8 @@ public class FileDownloader {
 
                         fileInputStream.close();
                         fileOutputStream.close();
-                        FileCounter++;
+
+                        progressBar.inc();
 
                     } catch (Exception e) {
 
