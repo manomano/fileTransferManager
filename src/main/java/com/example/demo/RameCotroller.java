@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.FileCheck.FileChecker;
 import com.example.demo.FileInfo.FileInfo;
+import com.example.demo.FileTransfer.MDBReader;
 import com.example.demo.FileTransfer.SmbConnector;
 import com.example.demo.FileTransfer.XLSXReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.example.demo.Converter.FileConverter.toFile;
 
 @RestController
 public class RameCotroller {
@@ -115,6 +119,17 @@ public class RameCotroller {
 //        Map<String,List<String>> myObj = model.asMap().get("hashMapList");
 //        List<HashMap<String,String>> res = (List<Map>)model.asMap().get("hashMapList");
         return "haai";
+    }
+
+
+    @Autowired
+    private MDBReader mdbReader;
+
+    @PostMapping("/mdb")
+    public String testmdb(@RequestParam("file") MultipartFile file) throws IOException {
+        mdbReader.readMdb(toFile(file));
+
+        return "yay";
     }
 
 
