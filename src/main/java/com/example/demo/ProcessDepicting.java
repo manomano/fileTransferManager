@@ -33,6 +33,17 @@ public class ProcessDepicting {
     }
 
 
+
+    @MessageMapping("/mdb")
+    @SendTo("/download/copyingFromServer")
+    public String fileProgressLocMDB(String ragaca) throws Exception {
+        FireSending fSending = new FireSending(this);
+        fSending.run();
+        return ""+FileDownloader.FilesToDownload+"-"+FileDownloader.FileCounter;
+        //return FileDownloader.FileCounter;
+    }
+
+
     public void updateInfo (){
             this.template.convertAndSend("/download/copyingFromServer", ""+FileDownloader.FilesToDownload+"-"+FileDownloader.FileCounter);
     }

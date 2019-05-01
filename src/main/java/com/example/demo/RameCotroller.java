@@ -63,7 +63,7 @@ public class RameCotroller {
 
     @PostMapping("/localDownload")
     public ResponseEntity<Map<String, List<String>> > submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("dest") String dest, @RequestParam("src") String src) throws Exception{
-        fileDownloader.downloadFromLocal(src,dest,file);
+        fileDownloader.downloadFromLocal_caller(src,dest,file, false);
         return ResponseEntity.ok().body(fileChecker.check(file, dest));
     }
 
@@ -122,13 +122,11 @@ public class RameCotroller {
     }
 
 
-    @Autowired
-    private MDBReader mdbReader;
+
 
     @PostMapping("/mdb")
-    public String testmdb(@RequestParam("file") MultipartFile file) throws IOException {
-        mdbReader.readMdb(toFile(file));
-
+    public String testmdb(@RequestParam("file") MultipartFile file, @RequestParam("dest") String dest, @RequestParam("src") String src) throws Exception {
+        fileDownloader.downloadFromLocal_caller(src,dest,file, true);
         return "yay";
     }
 

@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.FileInfo.FileInfo;
 import com.example.demo.FileInfo.imageInfo;
+import com.example.demo.FileTransfer.MDBReader;
 import com.example.demo.FileTransfer.SmbConnector;
 import com.example.demo.FileTransfer.XLSXReader;
 import jcifs.smb.SmbFile;
@@ -26,6 +27,10 @@ public class FileDownloader {
 
     @Autowired
     private SmbConnector smbConnector;
+
+
+    @Autowired
+    private MDBReader mdbReader;
 
     static int FileCounter = 0;
     static int FilesToDownload = 0;
@@ -126,53 +131,16 @@ public class FileDownloader {
 
 
 
-    public void downloadFromLocal(String source, String dest, MultipartFile file) throws Exception {
+    public void downloadFromLocal_caller(String source, String dest, MultipartFile file, boolean toRename) throws Exception {
         File rawFile = toFile(file);
-        List<FileInfo> imageList =  xlsxReader.readXLSX(rawFile);
-        FileDownloader.FileCounter = 0;
-        FileDownloader.FilesToDownload = imageList.size();
-
-        Map<String,List<String>> dictionaryMap = getMap(imageList);
-        File sourceDir = new File(source);
-        Set<String> keySet = dictionaryMap.keySet();
-        Map<String, List<String>> subFolders = emptyMap(keySet);
-        for (File f : sourceDir.listFiles()) {
-            String sub = f.getName().split("_")[0];
-            if(keySet.contains(sub))
-                subFolders.get(sub).add(f.getName());
+        List<FileInfo> imageList = new ArrayList<>();
+        if(toRename){
+            imageList = mdbReader.readMdb(rawFile);
+        }else{
+            imageList =  xlsxReader.readXLSX(rawFile);
         }
-        int counter = 0;
 
-
-
-
-        for (String key: dictionaryMap.keySet()) {
-            String d = dest + "\\" + key + "\\";
-            for (String subKey : subFolders.get(key)) {
-                String s = source + "\\" + subKey + "\\";
-                for (String fileName : dictionaryMap.get(key)) {
-                    try {
-                        File fileToDownload = new File(s + fileName + ".jpg");
-                        File fileDest = new File(d);
-                        if (!fileDest.exists()) {
-                            fileDest.mkdir();
-                        }
-
-                        FileInputStream fileInputStream = new FileInputStream(fileToDownload);
-                        FileOutputStream fileOutputStream = new FileOutputStream(new File(d, fileName + ".jpg"));
-
-                        IOUtils.copy(fileInputStream, fileOutputStream);
-
-                        fileInputStream.close();
-                        fileOutputStream.close();
-                        FileCounter++;
-
-                    } catch (Exception e) {
-
-                    }
-                }
-            }
-        }
+        downloadFromLocal(imageList,source,dest, toRename);
     }
 
 
@@ -317,6 +285,80 @@ public class FileDownloader {
         }
         return res;
     }
+
+
+
+    public void downloadFromLocal(List<FileInfo> imageList, String source, String dest, Boolean toRename) throws Exception {
+
+        FileDownloader.FileCounter = 0;
+        FileDownloader.FilesToDownload = imageList.size();
+
+        Map<String,List<String>> dictionaryMap = getMap(imageList);
+
+
+        Map<String,List<String>> dictForLogs= new HashMap<>();
+
+        //dictForLogs.putAll(dictionaryMap);
+        for (String key: dictionaryMap.keySet()) {
+            List<String> emptyList = new ArrayList<>();
+            dictForLogs.put(key, emptyList);
+            for (String fileName : dictionaryMap.get(key)) {
+                emptyList.add(fileName);
+            }
+        }
+
+
+
+        File sourceDir = new File(source);
+        Set<String> keySet = dictionaryMap.keySet();
+        Map<String, List<String>> subFolders = emptyMap(keySet);
+        for (File f : sourceDir.listFiles()) {
+            String sub = f.getName().split("_")[0];
+            if(keySet.contains(sub))
+                subFolders.get(sub).add(f.getName());
+        }
+        int counter = 0;
+
+        List<String> notFound = new ArrayList<>();
+
+        for (String key: dictionaryMap.keySet()) {
+            String d = dest + "\\" + key + "\\";
+            for (String subKey : subFolders.get(key)) {
+                String s = source + "\\" + subKey + "\\";
+                for (String fileName : dictionaryMap.get(key)) {
+                    try {
+                        File fileToDownload = new File(s + fileName + ".jpg");
+                        File fileDest = new File(d);
+                        if (!fileDest.exists()) {
+                            fileDest.mkdir();
+                        }
+
+                        FileInputStream fileInputStream = new FileInputStream(fileToDownload);
+
+                        String newFileName = fileName + ".jpg";
+                        if(toRename){
+                            newFileName = key + "_"+fileName + ".jpg";
+                        }
+
+                        FileOutputStream fileOutputStream = new FileOutputStream(new File(d, newFileName));
+
+                        IOUtils.copy(fileInputStream, fileOutputStream);
+
+                        fileInputStream.close();
+                        fileOutputStream.close();
+                        dictForLogs.get(key).remove(fileName);
+                        FileCounter++;
+
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        }
+
+        System.out.println(dictForLogs);
+    }
+
 
 
 }

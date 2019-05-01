@@ -39,35 +39,14 @@ function connect() {
         });
     });
 }
-/*
-function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
-    }
-    setConnected(false);
-    console.log("Disconnected");
-}
 
-function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
-}
-*/
 
 function showResponse(message, motherDivId) {
     let response = message.split("-");
     document.getElementById(motherDivId).innerHTML = "<span>გადმოსაწერი ფაილების ოდენობა: </span><span>"+response[0]+"</span><span> გადმოწერილი ფაილების ოდენობა: </span> <span>"+response[1]+"</span>"
-
-
 }
 
-$(function () {
-   /* $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });*/
-});
+
 
 
 let a = {};
@@ -99,7 +78,7 @@ function returnTimePassed(seconds){
 
 
 }
-        $("#excel").submit(function(event) {
+        $("#aaaaexcel").submit(function(event) {
             var fada = a.connect;
             event.preventDefault();
             startTime = new Date();
@@ -141,14 +120,17 @@ function returnTimePassed(seconds){
         });
 
 
-        $("#copylocal").submit(function(event) {
+        $("#copylocal, #excel, #copylocalMDB").submit(function(event) {
                 var fada = a.connect;
                 event.preventDefault();
                 startTime = new Date();
 
+                let id = this.id;
+
                 var $form = $(this),
-                    url = $form.attr('action');
-                $("#info_excel1").show();
+                    action = $form.attr('action');
+                let infoDivName = "#info_"+id;
+                $(infoDivName).show();
 
                 var socket = new SockJS('/gs-guide-websocket');
                 stompClient = Stomp.over(socket);
@@ -156,18 +138,18 @@ function returnTimePassed(seconds){
                     //setConnected(true);
                     console.log('Connected:gaeshvaaa ' + frame);
                     stompClient.subscribe('/download/copyingFromServer', function (greeting) {
-                        showResponse(greeting.body,"info_excel1");
+                        showResponse(greeting.body,infoDivName.substring(1,infoDivName.length));
                     });
 
-                    stompClient.send("/localDownload", {}, "dadada");
+                    stompClient.send(action, {}, "dadada");
 
 
                 });
 
-                var form = $('#copylocal')[0];
+                var form = this //$('#copylocal')[0];
                 let fm = new FormData(form);
                 $.ajax({
-                    url: url,
+                    url: action,
                     type: 'POST',
                     data: fm,
                     cache: false,
@@ -176,18 +158,23 @@ function returnTimePassed(seconds){
                     processData: false,
                     success: function (response) {
                         let seconds = Math.floor((new Date().getTime() - startTime.getTime())/1000);
-                        $("#progressInfo1").empty().append(returnTimePassed(seconds));
-                        $("#response_copylocal").empty().append(" <h2>ფაილები აკლია</h2><table class='table table-striped' ><thead><tr><th>ფოლდერი</th><th>ფაილი</th></tr></thead><tbody id='response_copylocal_tr'></tbody></table>");
-                        let data = response;
-                        for(let val in response){
-                            if(response[val].length==0){
-                                $("#response_copylocal_tr").append("<tr><td>"+val+"</td><td>0</td></tr>")
-                            }else{
-                                for(let a in response[val]){
-                                   $("#response_copylocal_tr").append("<tr><td>"+val+"</td><td>"+response[val][a]+"</td></tr>")
-                                }
-                            }
+                        let progressInfo = "#progressInfo_"+id;
 
+                        $(progressInfo).empty().append(returnTimePassed(seconds));
+                        let responsebar = "#response_" + id;
+                        if($(responsebar).length){
+                            $(responsebar).empty().append(" <h2>ფაილები აკლია</h2><table class='table table-striped' ><thead><tr><th>ფოლდერი</th><th>ფაილი</th></tr></thead><tbody id='response_copylocal_tr'></tbody></table>");
+                            let data = response;
+                            for(let val in response){
+                                if(response[val].length==0){
+                                    $(responsebar+"_tr").append("<tr><td>"+val+"</td><td>0</td></tr>")
+                                }else{
+                                    for(let a in response[val]){
+                                       $(responsebar+"_tr").append("<tr><td>"+val+"</td><td>"+response[val][a]+"</td></tr>")
+                                    }
+                                }
+
+                            }
                         }
 
                     }

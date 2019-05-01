@@ -64,6 +64,9 @@
 <div class="tab">
     <button class="tablinks" onclick="openForm(event, 'copy')">ფაილების კოპირება სერვერიდან ცხრილის მიხედვით</button>
     <button class="tablinks" onclick="openForm(event, 'copyloc')">ფაილების კოპირება ლოკალური დირექტორიიდან ცხრილის მიხედვით</button>
+    <button class="tablinks" onclick="openForm(event, 'copylocMDB')">ფაილების კოპირება ლოკალურად - MDB</button>
+
+
     <button class="tablinks" onclick="openForm(event, 'split')">ფოლდერის დაშლა</button>
     <button class="tablinks" onclick="openForm(event, 'splitnew')">ფოლდერის დაშლა(ორიგინალის შენარჩუნებით)</button>
     <button class="tablinks" onclick="openForm(event, 'checkboth')">ფაილების შემოწმება</button>
@@ -76,33 +79,63 @@
         <p>ექსელის ფაილი: <input type="file" th:field="*{file}" name="file" accept=".xls,.xlsx" /></p>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     </form>
-    <div id="progressInfo"></div>
-    <table class="table table-striped" id="excelResponse">
+    <div id="progressInfo_excel"></div>
+    <!--<table class="table table-striped" id="excelResponse">
         <thead>
         <tr><th>info</th></tr>
         </thead>
         <tbody id="progressTable"></tbody>
-    </table>
+    </table>-->
     <div id="info_excel"></div>
 </div>
 <div id="copyloc" class="tabcontent">
     <h3>ფაილების კოპირება ლოკალიდან სხვა დირექტორიაში ცხრილის მიხედვით</h3>
-    <form  id="copylocal"action="/localDownload" th:action="@{/localDownload}" th:object="${data}" method="post" enctype="multipart/form-data">
+    <form  id="copylocal" action="/localDownload" th:action="@{/localDownload}" th:object="${data}" method="post" enctype="multipart/form-data">
         <p>ფოლდერის მისამართი საიდანაც უნდა მოხდეს კოპირება(ბოლოს წინა ფოლდერი): <input type="text" th:field="*{src}" name="src" /></p>
         <p>ფოლდერის მისამართი სადაც უნდა მოხდეს კოპირება: <input type="text" th:field="*{dest}" name="dest" /></p>
         <p>ექსელის ფაილი: <input type="file" th:field="*{file}" name="file" accept=".xls,.xlsx" /></p>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     </form>
-    <div id="progressInfo1"></div>
+    <div id="progressInfo_copylocal"></div>
     <table class="table table-striped" id="excelResponse1">
         <thead>
         <tr><th>info</th></tr>
         </thead>
         <tbody id="progressTable1"></tbody>
     </table>
-    <div id="info_excel1"></div>
+    <div id="info_copylocal"></div>
     <div id="response_copylocal"></div>
 </div>
+
+
+
+
+<div id="copylocMDB" class="tabcontent">
+    <h3>ფაილების კოპირება ლოკალიდან სხვა დირექტორიაში ცხრილის მიხედვით</h3>
+    <form  id="copylocalMDB" action="/mdb" th:action="@{/mdb}" th:object="${data}" method="post" enctype="multipart/form-data">
+        <p>ფოლდერის მისამართი საიდანაც უნდა მოხდეს კოპირება(ბოლოს წინა ფოლდერი): <input type="text" th:field="*{src}" name="src" /></p>
+        <p>ფოლდერის მისამართი სადაც უნდა მოხდეს კოპირება: <input type="text" th:field="*{dest}" name="dest" /></p>
+        <p>ექსელის ფაილი: <input type="file" th:field="*{file}" name="file"  /></p>
+        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+    </form>
+    <div id="progressInfo_copylocalMDB"></div>
+
+    <div id="info_copylocalMDB"></div>
+    <div id="response_copylocalMDB"></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div id="split" class="tabcontent">
     <h3>დიდი ფოლდერის დაშლა</h3>
