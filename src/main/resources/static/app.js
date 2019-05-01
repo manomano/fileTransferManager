@@ -146,7 +146,7 @@ function returnTimePassed(seconds){
 
                 });
 
-                var form = this //$('#copylocal')[0];
+                var form = this;
                 let fm = new FormData(form);
                 $.ajax({
                     url: action,
@@ -162,6 +162,7 @@ function returnTimePassed(seconds){
 
                         $(progressInfo).empty().append(returnTimePassed(seconds));
                         let responsebar = "#response_" + id;
+                        let responsebar_id = "response_" + id;
                         if($(responsebar).length){
                             $(responsebar).empty().append(" <h2>ფაილები აკლია</h2><table class='table table-striped' ><thead><tr><th>ფოლდერი</th><th>ფაილი</th></tr></thead><tbody id='response_copylocal_tr'></tbody></table>");
                             let data = response;

@@ -32,6 +32,8 @@ public class FileDownloader {
     @Autowired
     private MDBReader mdbReader;
 
+    public static Map<String,List<String>> dictForLogs= new HashMap<>();
+
     static int FileCounter = 0;
     static int FilesToDownload = 0;
     private synchronized void incrementFileCounter(){
@@ -295,10 +297,7 @@ public class FileDownloader {
 
         Map<String,List<String>> dictionaryMap = getMap(imageList);
 
-
-        Map<String,List<String>> dictForLogs= new HashMap<>();
-
-        //dictForLogs.putAll(dictionaryMap);
+        dictForLogs.clear();
         for (String key: dictionaryMap.keySet()) {
             List<String> emptyList = new ArrayList<>();
             dictForLogs.put(key, emptyList);
@@ -306,7 +305,6 @@ public class FileDownloader {
                 emptyList.add(fileName);
             }
         }
-
 
 
         File sourceDir = new File(source);

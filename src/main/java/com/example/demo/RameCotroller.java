@@ -125,9 +125,9 @@ public class RameCotroller {
 
 
     @PostMapping("/mdb")
-    public String testmdb(@RequestParam("file") MultipartFile file, @RequestParam("dest") String dest, @RequestParam("src") String src) throws Exception {
+    public ResponseEntity<Map<String, List<String>> >  testmdb(@RequestParam("file") MultipartFile file, @RequestParam("dest") String dest, @RequestParam("src") String src) throws Exception {
         fileDownloader.downloadFromLocal_caller(src,dest,file, true);
-        return "yay";
+        return ResponseEntity.ok().body(FileDownloader.dictForLogs);
     }
 
 
