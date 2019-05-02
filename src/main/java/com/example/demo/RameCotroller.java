@@ -57,14 +57,14 @@ public class RameCotroller {
     public ResponseEntity<Map<String, List<String>> > submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception{
         FileDownloader.FileCounter = 0;
         fileDownloader.readFile(file, path);
-        return ResponseEntity.ok().body(fileChecker.check(file, path));
+        return ResponseEntity.ok().body(fileChecker.check(file, path, false));
 
     }
 
     @PostMapping("/localDownload")
     public ResponseEntity<Map<String, List<String>> > submitFileAndLocation(@RequestParam("file") MultipartFile file, @RequestParam("dest") String dest, @RequestParam("src") String src) throws Exception{
         fileDownloader.downloadFromLocal_caller(src,dest,file, false);
-        return ResponseEntity.ok().body(fileChecker.check(file, dest));
+        return ResponseEntity.ok().body(fileChecker.check(file, dest, false));
     }
 
     @PostMapping("/split")
@@ -88,7 +88,7 @@ public class RameCotroller {
 
     @PostMapping("/check")
     public ResponseEntity<Map<String,List<String>>> check(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
-        return ResponseEntity.ok().body(fileChecker.check(file,path));
+        return ResponseEntity.ok().body(fileChecker.check(file,path, false));
     }
 
     @PostMapping("/reverseCheck")
@@ -100,7 +100,7 @@ public class RameCotroller {
 
     @PostMapping("/checkboth")
     public ResponseEntity<Map<String, Map<String, List<String>>>> checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
-        return ResponseEntity.ok().body(fileChecker.checkboth(file,path));
+        return ResponseEntity.ok().body(fileChecker.checkboth(file,path, true));
     }
 
 
@@ -109,7 +109,7 @@ public class RameCotroller {
         /*ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("tst", fileChecker.checkboth(file,path));
         modelAndView.setViewName("redirect:/checkbothtest");*/
-        redirectAttributes.addFlashAttribute(fileChecker.checkboth(file,path));
+        redirectAttributes.addFlashAttribute(fileChecker.checkboth(file,path,true));
         return "redirect:/checkbothtest";
     }
 
