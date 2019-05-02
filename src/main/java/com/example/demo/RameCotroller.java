@@ -86,7 +86,7 @@ public class RameCotroller {
 
 
 
-    @PostMapping("/check")
+   /* @PostMapping("/check")
     public ResponseEntity<Map<String,List<String>>> check(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
         return ResponseEntity.ok().body(fileChecker.check(file,path, false));
     }
@@ -94,32 +94,17 @@ public class RameCotroller {
     @PostMapping("/reverseCheck")
     public ResponseEntity<Map<String,List<String>>> reverseCheck(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
         return ResponseEntity.ok().body(fileChecker.reverseCheck(file,path));
-    }
+    }*/
 
 
 
     @PostMapping("/checkboth")
-    public ResponseEntity<Map<String, Map<String, List<String>>>> checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws Exception {
-        return ResponseEntity.ok().body(fileChecker.checkboth(file,path, true));
+    public ResponseEntity<Map<String, Map<String, List<String>>>> checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path, @RequestParam("rename") int rename) throws Exception {
+
+        return ResponseEntity.ok().body(fileChecker.checkboth(file,path, ((rename==1)?true:false)));
     }
 
 
-    @PostMapping("/checkbothtest")
-    public String checkbothtest(@RequestParam("file") MultipartFile file, @RequestParam("path") String path, RedirectAttributes redirectAttributes) throws Exception {
-        /*ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("tst", fileChecker.checkboth(file,path));
-        modelAndView.setViewName("redirect:/checkbothtest");*/
-        redirectAttributes.addFlashAttribute(fileChecker.checkboth(file,path,true));
-        return "redirect:/checkbothtest";
-    }
-
-    @GetMapping("/checkbothtest")
-    public String handleGetRequest(Model model) {
-        Object bla = model.asMap().get("hashMapList");
-//        Map<String,List<String>> myObj = model.asMap().get("hashMapList");
-//        List<HashMap<String,String>> res = (List<Map>)model.asMap().get("hashMapList");
-        return "haai";
-    }
 
 
 

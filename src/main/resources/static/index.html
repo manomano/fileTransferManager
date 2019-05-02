@@ -160,6 +160,10 @@
     <form action="/checkboth" th:action="@{/check}" th:object="${data}" method="post" enctype="multipart/form-data">
         <p>ფოლდერის მისამართი(ბოლოს წინა ფოლდერი) : <input type="text" th:field="*{path}" name="path" /></p>
         <p>ექსელის ფაილი: <input type="file" th:field="*{file}" name="file" accept=".xls,.xlsx" /></p>
+        <p>ფაილის სახელწოდება
+            <input type="radio" name="rename" th:field="*{rename}" value="0" checked>ცვლილების გარეშე
+            <input type="radio" name="rename" th:field="*{rename}" value="1">შეცვლილია
+        </p>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     </form>
 </div>
