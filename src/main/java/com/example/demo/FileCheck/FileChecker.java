@@ -19,19 +19,19 @@ public class FileChecker {
     private XLSXReader xlsxReader;
 
 
-    public Map<String,Map<String, List<String>>> checkboth(MultipartFile excel, String dir)throws Exception{
+    public Map<String,Map<String, List<String>>> checkboth(MultipartFile excel, String dir, Boolean renamed)throws Exception{
         List<FileInfo> fileInfo = xlsxReader.readXLSX(toFile(excel));
         Map<String, List<String>> map = getMap(fileInfo);
         Set<String> keySet = map.keySet();
         Map<String, Map<String, List<String>>> resultMap = new HashMap<>();
 
-        resultMap.put("ფოტო არ არის",this.check_alone(map, keySet, dir));
-        resultMap.put("XLSX ში არ არის",this.reverseCheck_alone(map,dir));
+        resultMap.put("ფოტო არ არის",this.check_alone(map, keySet, dir, renamed));
+        resultMap.put("XLSX ში არ არის",this.reverseCheck_alone(map,dir, renamed));
         return resultMap;
     }
 
 
-    public Map<String, List<String>> check_alone(Map<String, List<String>> map, Set<String> keySet, String dir) throws Exception{
+    public Map<String, List<String>> check_alone(Map<String, List<String>> map, Set<String> keySet, String dir, Boolean renamed) throws Exception{
         Map<String, List<String>> missingPhotos = new HashMap<>();
 
         Map<String, List<String>> keySubFolders = emptyMapWithKeyset(keySet);
@@ -49,7 +49,7 @@ public class FileChecker {
             for (String key : keySubFolders.get(elem)) {
                 try {
                     File subdir = new File(dir + "/" + key);
-                    photos.addAll(getPhotoNamesFromFile(subdir));
+                    photos.addAll(getPhotoNamesFromFile(subdir, renamed));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -64,7 +64,7 @@ public class FileChecker {
     }
 
 
-    public Map<String, List<String>> reverseCheck_alone(Map<String, List<String>> map, String dir) throws Exception {
+    public Map<String, List<String>> reverseCheck_alone(Map<String, List<String>> map, String dir,Boolean renamed) throws Exception {
         File directory = new File(dir);
         Map<String, List<String>> missing = new HashMap<>();
 
@@ -76,8 +76,11 @@ public class FileChecker {
                 String key = f.getName().split("_")[0];
                 if (!map.containsKey(key))
                     map.put(key, new ArrayList<>());
-                if (!map.get(key).contains(photoName))
+
+                String toCheck = renamed ? photoName.substring(7) : photoName;
+                if (!map.get(key).contains(toCheck))
                     curMissing.add(photoName);
+
             }
             missing.put(f.getName(), curMissing);
         }
@@ -88,7 +91,7 @@ public class FileChecker {
 
 
 
-    public Map<String, List<String>> check(MultipartFile excel, String dir) throws Exception{
+    public Map<String, List<String>> check(MultipartFile excel, String dir, Boolean renamed) throws Exception{
         List<FileInfo> fileInfo = xlsxReader.readXLSX(toFile(excel));
         Map<String, List<String>> map = getMap(fileInfo);
         Set<String> keySet = map.keySet();
@@ -108,7 +111,7 @@ public class FileChecker {
             for (String key : keySubFolders.get(elem)) {
                 try {
                     File subdir = new File(dir + "/" + key);
-                    photos.addAll(getPhotoNamesFromFile(subdir));
+                    photos.addAll(getPhotoNamesFromFile(subdir, renamed));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -134,7 +137,7 @@ public class FileChecker {
             File[] files = f.listFiles();
             if ( files.length == 0) continue;
             for (File f2 : files) {
-                String photoName = f2.getName().split("\\.")[0];
+                String photoName = f2.getName().split("\\.")[0].substring(7);
                 if (!map.get(f.getName().split("_")[0]).contains(photoName))
                     curMissing.add(photoName);
             }
@@ -146,11 +149,15 @@ public class FileChecker {
 
 
 
-    private List<String> getPhotoNamesFromFile(File file) {
+    private List<String> getPhotoNamesFromFile(File file, boolean renamed) {
         List<String> photos = new ArrayList<>();
-        for (File f : file.listFiles()) {
-            photos.add(f.getName().split("\\.")[0]);
+        if (renamed) {
+            for (File f : file.listFiles())
+                photos.add(f.getName().split("\\.")[0].substring(7));
+            return photos;
         }
+        for (File f : file.listFiles())
+            photos.add(f.getName().split("\\.")[0]);
         return photos;
     }
 
