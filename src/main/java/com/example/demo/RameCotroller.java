@@ -101,7 +101,7 @@ public class RameCotroller {
     @PostMapping("/checkboth")
     public ResponseEntity<Map<String, Map<String, List<String>>>> checkboth(@RequestParam("file") MultipartFile file, @RequestParam("path") String path, @RequestParam("rename") int rename) throws Exception {
 
-        return ResponseEntity.ok().body(fileChecker.checkboth(file,path, ((rename==1)?true:false)));
+        return ResponseEntity.ok().body(fileChecker.checkboth(file,path, (rename>0)));
     }
 
 
